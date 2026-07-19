@@ -1,0 +1,27 @@
+# Windows (PowerShell):
+@"
+venv/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+.DS_Store
+*.faiss
+*.pkl
+"@ | Out-File -FilePath .gitignore -Encoding utf8
+
+# Mac/Linux:
+cat > .gitignore << 'EOF'
+venv/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+.DS_Store
+*.faiss
+*.pkl
+EOF

@@ -1,99 +1,112 @@
 # AI PDF Assistant
 
-Chat with any PDF using Google Gemini (free tier) — upload a document and ask questions in natural language. Built with Python, LangChain, FAISS, and Streamlit.
+Chat with any PDF using a fully local LLM — no API keys, no internet required, no costs.
+Upload a document and ask questions in natural language.
 
 ---
 
 ## Features
 
-- Upload any PDF and ask questions in plain English
-- Answers generated using Google Gemini 2.0 Flash (free, no credit card needed)
+- 100% local — no OpenAI, no Gemini, no API costs
+- Supports multiple local models (Llama 3.1, Mistral, Qwen2.5, Code Llama)
 - RAG pipeline — answers come only from your document, not general knowledge
 - Shows which chunks of the document were used to generate each answer
 - Adjustable chunk size, overlap, and retrieval count via sidebar
 - Chat history within session
+- Works offline after first setup
 
 ---
 
 ## Stack
 
-- Google Gemini 2.0 Flash — Free LLM (1,000 requests/day, 15 requests/minute)
+- Ollama — Local LLM runtime (runs Llama 3.1, Mistral, and others on your machine)
 - LangChain — Orchestration and RAG pipeline
+- HuggingFace Sentence Transformers — Free local embeddings (all-MiniLM-L6-v2)
 - FAISS — Vector store for semantic search
 - Streamlit — Web UI
 - pypdf — PDF text extraction
-- python-dotenv — API key management
 
 ---
 
 ## Architecture
 
 PDF Upload
-  → pypdf extracts text
-  → LangChain splits into chunks (1000 chars, 200 overlap)
-  → Gemini Embeddings converts chunks to vectors
-  → FAISS stores vectors locally
-  → User asks a question
-  → Question embedded and matched against FAISS
-  → Top K matching chunks sent to Gemini
-  → Gemini returns answer based only on those chunks
-  → Answer displayed in Streamlit UI
+  to pypdf which extracts text
+  to LangChain which splits into chunks (1000 chars, 200 overlap)
+  to HuggingFace all-MiniLM-L6-v2 which converts chunks to vectors (local, free, unlimited)
+  to FAISS which stores vectors in memory
+  to User asks a question
+  to Question embedded and matched against FAISS
+  to Top K matching chunks sent to local LLM via Ollama
+  to LLM returns answer based only on those chunks
+  to Answer displayed in Streamlit UI
 
 ---
 
 ## Setup
 
-Step 1 — Get a free Gemini API key at https://aistudio.google.com
+Step 1 — Install Ollama
 
-Step 2 — Clone the repo
+    Download from https://ollama.com and install it.
+
+Step 2 — Pull a local model
+
+    ollama pull llama3.1:8b
+
+Step 3 — Start the Ollama server
+
+    ollama serve
+
+Step 4 — Clone the repo
 
     git clone https://github.com/Khushbookri977/ai-pdf-assistant.git
     cd ai-pdf-assistant
 
-Step 3 — Create virtual environment and install dependencies
+Step 5 — Create virtual environment and install dependencies
 
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
 
-Step 4 — Add your API key
-
-    Create a file called .env in the project root and add:
-    GEMINI_API_KEY=your_key_here
-
-Step 5 — Run the app
+Step 6 — Run the app (in a new terminal with venv active)
 
     streamlit run app.py
 
-Step 6 — Open your browser at http://localhost:8501
+Step 7 — Open your browser at http://localhost:8501
+
+---
+
+## Available Models
+
+You can switch models from the sidebar dropdown. Pull any of these with Ollama:
+
+    ollama pull llama3.1:8b     # Best for general Q&A (recommended)
+    ollama pull mistral:7b      # Fast, good for document Q&A
+    ollama pull qwen2.5:7b      # Strong reasoning
+    ollama pull codellama:7b    # Best for code-related PDFs
+
+All models require approximately 8 GB RAM and 5 GB disk space.
 
 ---
 
 ## Usage
 
-1. Upload a PDF using the file uploader
-2. Wait for text extraction and embedding (takes a few seconds)
-3. Type your question in the chat box
-4. Gemini answers based only on the content of your PDF
-5. Expand "Source chunks" to see which parts of the document were used
-
----
-
-## Free Tier Limits
-
-- 1,000 requests per day
-- 15 requests per minute
-- No credit card required
-- Data may be used by Google to improve their products on the free tier
+1. Make sure Ollama is running (ollama serve)
+2. Open the app at http://localhost:8501
+3. Select your preferred model from the sidebar
+4. Upload a PDF using the file uploader
+5. Wait for text extraction and embedding (takes a few seconds)
+6. Type your question in the chat box
+7. The LLM answers based only on the content of your PDF
+8. Expand Source chunks to see which parts of the document were used
 
 ---
 
 ## Project Structure
 
     ai-pdf-assistant/
-    ├── app.py              # Main Streamlit application
-    ├── requirements.txt    # Python dependencies
-    ├── .env                # API key (not pushed to GitHub)
+    ├── app.py                  # Main Streamlit application
+    ├── requirements.txt        # Python dependencies
     ├── .gitignore
     ├── LICENSE
     └── README.md

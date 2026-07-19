@@ -111,6 +111,17 @@ All models require approximately 8 GB RAM and 5 GB disk space.
     ├── LICENSE
     └── README.md
 
+
+---
+
+## Screenshots
+
+Home screen:
+![Home](assets/home.png)
+
+Chat in action:
+![Chat Demo](assets/chat-demo.png)
+
 ---
 
 ## License
